@@ -1,0 +1,5 @@
+aeternum_stock/__pycache__
+inventory/__pycache__
+inventory/migrations/__pycache__
+db.backup.sqlite3
+db.sqlite3

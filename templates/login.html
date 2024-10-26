@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+</head>
+<body style="background-image: url('{% static 'assets/space.png' %}');">
+  <div class="container">
+    <div class="title-card">
+      <img src="{% static 'assets/Title2.png' %}" alt="Title Image" />
+    </div>
+    <form method="post" action="{% url 'login' %}">
+        <h2>Login</h2>
+        {% if messages %}
+          {% for message in messages %}
+            <p style="color: red;">{{ message }}</p>
+          {% endfor %}
+        {% endif %}
+        {% csrf_token %}
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username" class="input" required><br><br>
+
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password" class="input" required><br><br>
+
+        <button type="submit" class='button'>Login</button>
+    </form>
+
+    <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+  </div>
+</body>
+</html>
+
