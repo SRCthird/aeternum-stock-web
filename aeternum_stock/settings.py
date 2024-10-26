@@ -38,7 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'inventory'
+    'inventory',
+    'api',
+    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -115,13 +117,14 @@ USE_I18N = True
 
 USE_TZ = True
 
-SITE_PREFIX = 'inventory'
+SITE_PREFIX = 'inventory/'
+LOGIN_REDIRECT_URL = f'/{SITE_PREFIX}'
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = f'{SITE_PREFIX}/static/'
+STATIC_URL = f'{SITE_PREFIX}static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
