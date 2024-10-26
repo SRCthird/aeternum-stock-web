@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'css/styles.light.css' %}">
+  <link rel="stylesheet" href="{% static 'css/accounts/styles.light.css' %}">
+{% endblock %}
+
+{% block body %}
+  <body 
+    style="
+      background-image: url('{% static 'assets/space.light.png' %}');
+      background-repeat: no-repeat;
+      background-size: cover;
+    ">
+    <div class="container">
+      <div class="title-card">
+        <img src="{% static 'assets/Title2.png' %}" alt="Title Image" />
+      </div>
+      {% block form %}
+      {% endblock %}
+      <div></div>
+      {% block redirect %}
+      {% endblock %}
+    </div>
+  </body>
+{% endblock %}
+

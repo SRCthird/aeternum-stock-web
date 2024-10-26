@@ -1,42 +1,30 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'registration/base.html' %}
 {% load static %}
 
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <link rel="stylesheet" href="{% static 'css/styles.light.css' %}">
-    <link rel="stylesheet" href="{% static 'css/accounts/styles.light.css' %}">
-</head>
-<body 
-  style="
-    background-image: url('{% static 'assets/space.light.png' %}');
-    background-repeat: no-repeat;
-    background-size: cover;
-  ">
-  <div class="container">
-    <div class="title-card">
-      <img src="{% static 'assets/Title2.png' %}" alt="Title Image" />
-    </div>
-    <form method="post" action="{% url 'login' %}">
-        <h2>Login</h2>
-        {% if messages %}
-          {% for message in messages %}
-            <p style="color: red;">{{ message }}</p>
-          {% endfor %}
-        {% endif %}
-        {% csrf_token %}
-        <label for="username">Username:</label><br>
-        <input type="text" id="username" name="username" class="input" required><br><br>
+{% block title %}
+  Login
+{% endblock %}
 
-        <label for="password">Password:</label><br>
-        <input type="password" id="password" name="password" class="input" required><br><br>
+{% block form %}
+  <form method="post" action="{% url 'login' %}">
+      <h2>Login</h2>
+      {% if messages %}
+        {% for message in messages %}
+          <p style="color: red;">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+      {% csrf_token %}
+      <label for="username">Username:</label><br>
+      <input type="text" id="username" name="username" class="input" required><br><br>
 
-        <button type="submit" class='button'>Login</button>
-    </form>
-    <div></div>
-    <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
-  </div>
-</body>
-</html>
+      <label for="password">Password:</label><br>
+      <input type="password" id="password" name="password" class="input" required><br><br>
+
+      <button type="submit" class='button'>Login</button>
+  </form>
+{% endblock %}
+
+{% block redirect %}
+  <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+{% endblock %}
 
