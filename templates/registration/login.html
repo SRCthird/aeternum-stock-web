@@ -5,9 +5,15 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href="{% static 'css/accounts/login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.light.css' %}">
+    <link rel="stylesheet" href="{% static 'css/accounts/styles.light.css' %}">
 </head>
-<body style="background-image: url('{% static 'assets/space.png' %}');">
+<body 
+  style="
+    background-image: url('{% static 'assets/space.light.png' %}');
+    background-repeat: no-repeat;
+    background-size: cover;
+  ">
   <div class="container">
     <div class="title-card">
       <img src="{% static 'assets/Title2.png' %}" alt="Title Image" />
@@ -28,7 +34,7 @@
 
         <button type="submit" class='button'>Login</button>
     </form>
-
+    <div></div>
     <p>Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
   </div>
 </body>

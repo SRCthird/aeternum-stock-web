@@ -5,14 +5,20 @@
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
-    <link rel="stylesheet" href="{% static 'css/accounts/register.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.light.css' %}">
+    <link rel="stylesheet" href="{% static 'css/accounts/styles.light.css' %}">
 </head>
-<body style="background-image: url('{% static 'assets/space.png' %}');">
+<body 
+  style="
+    background-image: url('{% static 'assets/space.light.png' %}');
+    background-repeat: no-repeat;
+    background-size: cover;
+  ">
   <div class="container">
     <div class="title-card">
       <img src="{% static 'assets/Title2.png' %}" alt="Title Image" />
     </div>
-    <form method="post">
+    <form method="post" >
       <h2>Register</h2>
       {% if messages %}
           {% for message in messages %}
@@ -34,7 +40,7 @@
 
       <button type="submit" class='button'>Register</button>
     </form>
-
+    <div></div>
     <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
 </body>
 </html>
