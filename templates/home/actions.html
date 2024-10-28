@@ -1,4 +1,4 @@
-<div class='action-container' >
+<div class='action-container flex-grow-1' >
   <a class='action-body' href="{% url 'create_item' %}">
     <button class='action-button'>Create Item</button>
   </a>
@@ -11,11 +11,8 @@
   <a class='action-body' href="{% url 'transfer' %}?action=scrap">
     <button class='action-button'>Scrap Items</button>
   </a>
-  <div style='height: 100%;'></div>
+  <div style="flex-grow: 1;"></div>
   <a class='action-body' href="{% url 'find_lot' %}">
     <button class='action-button'>Find Lot</button>
   </a>
 </div>
-
-
-
