@@ -21,5 +21,6 @@ from .settings import SITE_PREFIX
 urlpatterns = [
     path(f'{SITE_PREFIX}', include("inventory.urls")),
     path(f'{SITE_PREFIX}accounts/', include('accounts.urls')),
+    path(f'{SITE_PREFIX}productlot/', include('productlot.urls')),
     path(f'{SITE_PREFIX}admin/', admin.site.urls),
 ]
