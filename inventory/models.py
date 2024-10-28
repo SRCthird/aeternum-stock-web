@@ -3,6 +3,8 @@ from django.db import models
 from django.db.models import CASCADE, RESTRICT, SET_NULL
 from django.contrib.auth.models import User
 from django.utils import timezone
+from django.conf import settings
+from simple_history.models import HistoricalRecords
 
 
 class Product(models.Model):
@@ -18,6 +20,11 @@ class Product(models.Model):
         blank=False,
         null=False,
     )
+
+    history = HistoricalRecords(user_model=settings.AUTH_USER_MODEL)
+
+    def __str__(self):
+        return f'{self.name}'
 
 
 class ProductLot(models.Model):
@@ -36,6 +43,11 @@ class ProductLot(models.Model):
     )
     quantity = models.IntegerField(default=0)
 
+    history = HistoricalRecords(user_model=settings.AUTH_USER_MODEL)
+
+    def __str__(self):
+        return f'{self.lot_number}'
+
 
 class Warehouse(models.Model):
     id = models.AutoField(primary_key=True)
@@ -44,6 +56,8 @@ class Warehouse(models.Model):
         unique=True,
     )
     active = models.BooleanField(default=True)
+
+    history = HistoricalRecords(user_model=settings.AUTH_USER_MODEL)
 
     def __str__(self):
         return f'{self.name}'
@@ -66,6 +80,8 @@ class InventoryBay(models.Model):
         unique=True,
     )
     active = models.BooleanField(default=True)
+
+    history = HistoricalRecords(user_model=settings.AUTH_USER_MODEL)
 
 
 class Inventory(models.Model):
@@ -106,6 +122,8 @@ class Inventory(models.Model):
     )
     updated_at = models.DateTimeField(auto_now=True)
 
+    history = HistoricalRecords(user_model=settings.AUTH_USER_MODEL)
+
     def save(self, *args, **kwargs):
         user = kwargs.pop('user', None)
         if not self.pk:
@@ -114,9 +132,6 @@ class Inventory(models.Model):
         self.updated_by = user
         self.updated_at = timezone.now()
         super().save(*args, **kwargs)
-
-    # class Meta:
-    #     abstract = True
 
 
 class Log(models.Model):
