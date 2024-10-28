@@ -2,26 +2,56 @@
 {% load static %}
 
 {% block styles %}
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-  <link rel="stylesheet" href="{% static 'css/accounts/styles.css' %}">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 {% endblock %}
 
 {% block body %}
-  <body 
-    style="
+  <style>
+    body.light-theme {
       background-image: url('{% static 'assets/space.light.png' %}');
       background-repeat: no-repeat;
       background-size: cover;
-    ">
-    <div class="container">
-      <div class="title-card">
-        <img src="{% static 'assets/Title2.png' %}" alt="Title Image" />
+    }
+
+    body.light-theme .main-registration {
+        background: rgba(0,0,0,.7);
+    }
+
+    body.dark-theme {
+      background-image: url('{% static 'assets/space.dark.png' %}');
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    body.dark-theme .main-registration {
+        background: rgba(255, 255, 255,.7);
+    }
+    
+  </style>
+  <body class="light-theme" style="margin:0;">
+    <div class="container mt-5">
+      <div class="card shadow-lg main-registration" style="
+          border-radius: 15px;
+          background: rgba()
+        ">
+        <div class="card-body">
+          <div class="text-center mb-4">
+            <img src="{% static 'assets/Title2.png' %}" alt="Title Image" class="img-fluid" />
+          </div>
+          
+          <!-- Form Section -->
+          <div>
+            {% block form %}
+            {% endblock %}
+          </div>
+          
+          <!-- Redirect Section -->
+          <div class="mt-4">
+            {% block redirect %}
+            {% endblock %}
+          </div>
+        </div>
       </div>
-      {% block form %}
-      {% endblock %}
-      <div></div>
-      {% block redirect %}
-      {% endblock %}
     </div>
   </body>
 {% endblock %}

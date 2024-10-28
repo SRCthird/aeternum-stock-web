@@ -1,0 +1,42 @@
+{% extends 'home/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+  <!-- Search Form -->
+  <form method="get" class="mb-4">
+    <div class="input-group">
+      <input type="text" name="q" value="{{ search_query }}" class="form-control" placeholder="Search by Product Lot, Inventory Bay, or Warehouse">
+      <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+  </form>
+
+  <!-- Display the list of Inventory Bay Lots -->
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>Warehouse</th>
+          <th>Inventory Bay</th>
+          <th>Product Lot</th>
+          <th>Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for lot in inventory_bay_lots %}
+        <tr>
+          <td>{{ lot.inventory_bay.warehouse_name.name }}</td>
+          <td>{{ lot.inventory_bay.friendly_name }}</td>
+          <td>{{ lot.product_lot.lot_number }}</td>
+          <td>{{ lot.quantity }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center">No Inventory Bay Lots found for the search criteria.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
