@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # Plugins
     'simple_history',
     'widget_tweaks',
+    'csvexport',
 
     # Self
     'inventory',
@@ -113,6 +114,13 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+CSV_EXPORT_DELIMITER = ','
+CSV_EXPORT_ESCAPECHAR = "'"
+CSV_EXPORT_QUOTECHAR = '"'
+CSV_EXPORT_DOUBLEQUOTE = True
+CSV_EXPORT_LINETERMINATOR = r'\n'
+CSV_EXPORT_QUOTING = 'QUOTE_ALL'
 
 
 # Internationalization
