@@ -80,6 +80,9 @@ class InventoryBay(models.Model):
 
     history = HistoricalRecords(user_model=settings.AUTH_USER_MODEL)
 
+    def __str__(self):
+        return f'{self.friendly_name}'
+
     def get_lot_quantity(self, product_lot):
         """Get the current quantity of a specific ProductLot in this InventoryBay."""
         try:

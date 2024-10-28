@@ -1,7 +1,106 @@
 {% extends 'home/base.html' %}
 
+{% load widget_tweaks %}
+
 {% block content %}
-  <h2>{{ title }}</h2>
-  <p>Action: {{ action }}</p>
-  <!-- Form or interface for transfer, release, or scrap actions -->
+<div class="container mt-5 d-flex justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <!-- Display non-field errors (general errors not tied to a specific field) -->
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {{ form.non_field_errors|join:"<br>" }}
+      </div>
+    {% endif %}
+    
+    <form method="post" class="shadow p-5 rounded">
+        {% csrf_token %}
+
+        <!-- Product Lot Field -->
+        <div class="mb-4">
+            <label for="{{ form.product_lot.id_for_label }}" class="form-label fw-bold d-block">Product Lot</label>
+            {{ form.product_lot|add_class:"form-control" }}
+            {% if form.product_lot.help_text %}
+                <small class="form-text text-muted">{{ form.product_lot.help_text }}</small>
+            {% endif %}
+            {% if form.product_lot.errors %}
+                <div class="text-danger mt-1">{{ form.product_lot.errors|join:", " }}</div>
+            {% endif %}
+        </div>
+
+        <!-- From Inventory Bay Field -->
+        <div class="mb-4">
+            <label for="{{ form.from_inventory_bay.id_for_label }}" class="form-label fw-bold d-block">From Inventory Bay</label>
+            {{ form.from_inventory_bay|add_class:"form-control" }}
+            {% if form.from_inventory_bay.help_text %}
+                <small class="form-text text-muted">{{ form.from_inventory_bay.help_text }}</small>
+            {% endif %}
+            {% if form.from_inventory_bay.errors %}
+                <div class="text-danger mt-1">{{ form.from_inventory_bay.errors|join:", " }}</div>
+            {% endif %}
+        </div>
+
+        <!-- To Inventory Bay Field -->
+        <div class="mb-4">
+            <label for="{{ form.to_inventory_bay.id_for_label }}" class="form-label fw-bold d-block">To Inventory Bay</label>
+            {{ form.to_inventory_bay|add_class:"form-control" }}
+            {% if form.to_inventory_bay.help_text %}
+                <small class="form-text text-muted">{{ form.to_inventory_bay.help_text }}</small>
+            {% endif %}
+            {% if form.to_inventory_bay.errors %}
+                <div class="text-danger mt-1">{{ form.to_inventory_bay.errors|join:", " }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Quantity Field -->
+        <div class="mb-4">
+            <label for="{{ form.quantity.id_for_label }}" class="form-label fw-bold d-block">Quantity</label>
+            {{ form.quantity|add_class:"form-control" }}
+            {% if form.quantity.help_text %}
+                <small class="form-text text-muted">{{ form.quantity.help_text }}</small>
+            {% endif %}
+            {% if form.quantity.errors %}
+                <div class="text-danger mt-1">{{ form.quantity.errors|join:", " }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary w-100 py-2 mt-4">
+          Submit Transfer
+        </button>
+    </form>
+
+    <div class="text-center mt-3">
+      <a href="{% url 'index' %}" class="btn btn-link">Back to Action List</a>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript to filter Inventory Bays based on selected Product Lot -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    // Event listener for Product Lot dropdown change
+    $('#{{ form.product_lot.id_for_label }}').change(function() {
+      var productLotId = $(this).val();
+
+      // AJAX request to fetch Inventory Bays where the selected Product Lot has quantity > 0
+      $.ajax({
+        url: "{% url 'get_inventory_bays_for_lot' 0 %}".replace('0', productLotId),
+        type: 'GET',
+        success: function(response) {
+          var fromInventoryBay = $('#{{ form.from_inventory_bay.id_for_label }}');
+          fromInventoryBay.empty();  // Clear existing options
+
+          // Populate dropdown with filtered options
+          response.bays.forEach(function(bay) {
+            fromInventoryBay.append(new Option(bay.name, bay.id));
+          });
+        },
+        error: function() {
+          alert('Failed to retrieve inventory bays for the selected lot.');
+        }
+      });
+    });
+  });
+</script>
 {% endblock %}
