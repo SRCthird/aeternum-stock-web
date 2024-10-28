@@ -1,0 +1,21 @@
+<div class='action-container' >
+  <a class='action-body' href="{% url 'create_item' %}">
+    <button class='action-button'>Create Item</button>
+  </a>
+  <a class='action-body' href="{% url 'transfer' %}">
+    <button class='action-button'>Inventory Transfer</button>
+  </a>
+  <a class='action-body' href="{% url 'transfer' %}?action=release">
+    <button class='action-button'>Release Item</button>
+  </a>
+  <a class='action-body' href="{% url 'transfer' %}?action=scrap">
+    <button class='action-button'>Scrap Items</button>
+  </a>
+  <div style='height: 100%;'></div>
+  <a class='action-body' href="{% url 'find_lot' %}">
+    <button class='action-button'>Find Lot</button>
+  </a>
+</div>
+
+
+

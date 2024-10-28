@@ -1,0 +1,71 @@
+{% extends 'home/base.html' %}
+
+{% load widget_tweaks %}
+
+{% block content %}
+<div class="container mt-5 d-flex justify-content-center">
+  <div class="col-md-8 col-lg-6">
+    <form method="post" class="shadow p-5 rounded">
+        {% csrf_token %}
+        
+        <!-- Lot Number Field -->
+        <div class="mb-4">
+            <label for="{{ form.lot_number.id_for_label }}" class="form-label fw-bold d-block">Lot Number</label>
+            {{ form.lot_number|add_class:"form-control" }}
+            {% if form.lot_number.help_text %}
+                <small class="form-text text-muted">{{ form.lot_number.help_text }}</small>
+            {% endif %}
+            {% if form.lot_number.errors %}
+                <div class="text-danger mt-1">{{ form.lot_number.errors|join:", " }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Internal Reference Field -->
+        <div class="mb-4">
+            <label for="{{ form.internal_reference.id_for_label }}" class="form-label fw-bold d-block">Internal Reference</label>
+            {{ form.internal_reference|add_class:"form-control" }}
+            {% if form.internal_reference.help_text %}
+                <small class="form-text text-muted">{{ form.internal_reference.help_text }}</small>
+            {% endif %}
+            {% if form.internal_reference.errors %}
+                <div class="text-danger mt-1">{{ form.internal_reference.errors|join:", " }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Product Name Field -->
+        <div class="mb-4">
+            <label for="{{ form.product_name.id_for_label }}" class="form-label fw-bold d-block">Product Name</label>
+            {{ form.product_name|add_class:"form-control" }}
+            {% if form.product_name.help_text %}
+                <small class="form-text text-muted">{{ form.product_name.help_text }}</small>
+            {% endif %}
+            {% if form.product_name.errors %}
+                <div class="text-danger mt-1">{{ form.product_name.errors|join:", " }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Quantity Field -->
+        <div class="mb-4">
+            <label for="{{ form.quantity.id_for_label }}" class="form-label fw-bold d-block">Quantity</label>
+            {{ form.quantity|add_class:"form-control" }}
+            {% if form.quantity.help_text %}
+                <small class="form-text text-muted">{{ form.quantity.help_text }}</small>
+            {% endif %}
+            {% if form.quantity.errors %}
+                <div class="text-danger mt-1">{{ form.quantity.errors|join:", " }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-primary w-100 py-2 mt-4">
+          {% if product_lot %}Update{% else %}Save{% endif %}
+        </button>
+    </form>
+
+    <div class="text-center mt-3">
+      <a href="{% url 'index' %}" class="btn btn-link">Back to Action List</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

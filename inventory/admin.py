@@ -1,4 +1,5 @@
 from django.contrib import admin
+from simple_history.admin import SimpleHistoryAdmin
 from . import models
 
 admin.AdminSite.site_header = "Aeternum Stock - Admin Center"
@@ -18,7 +19,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.ProductLot)
-class ProductLotAdmin(admin.ModelAdmin):
+class ProductLotAdmin(SimpleHistoryAdmin):
     list_display = (
         'id', 'lot_number', 'internal_reference', 'product_name', 'quantity',
     )
@@ -26,7 +27,7 @@ class ProductLotAdmin(admin.ModelAdmin):
         'lot_number', 'internal_reference', 'product_name', 'quantity',
     )
     search_fields = (
-        'lot_number', 'internal_reference', 'product_name', 'quantity',
+        'lot_number', 'internal_reference', 'product_name__name',
     )
 
     fieldsets = (
