@@ -6,7 +6,7 @@ admin.AdminSite.site_header = "Aeternum Stock - Admin Center"
 
 
 @admin.register(models.Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(SimpleHistoryAdmin):
     list_display = ('id', 'name', 'description',)
     list_filter = ('name', 'description',)
     search_fields = ('name', 'description',)
@@ -40,7 +40,7 @@ class ProductLotAdmin(SimpleHistoryAdmin):
 
 
 @admin.register(models.Warehouse)
-class WarehouseAdmin(admin.ModelAdmin):
+class WarehouseAdmin(SimpleHistoryAdmin):
     list_display = ('id', 'name', 'active',)
     list_filter = ('name', 'active',)
     search_fields = ('name', 'active',)
@@ -53,7 +53,7 @@ class WarehouseAdmin(admin.ModelAdmin):
 
 
 @admin.register(models.InventoryBay)
-class InventoryBayAdmin(admin.ModelAdmin):
+class InventoryBayAdmin(SimpleHistoryAdmin):
     list_display = (
         'id', 'name', 'warehouse_name',
         'max_unique_lots', 'friendly_name', 'active',
@@ -63,8 +63,7 @@ class InventoryBayAdmin(admin.ModelAdmin):
         'friendly_name', 'active',
     )
     search_fields = (
-        'name', 'warehouse_name', 'max_unique_lots',
-        'friendly_name', 'active',
+        'name', 'warehouse_name__name', 'friendly_name',
     )
 
     fieldsets = (
@@ -77,31 +76,44 @@ class InventoryBayAdmin(admin.ModelAdmin):
     )
 
 
-@admin.register(models.Inventory)
-class InventoryAdmin(admin.ModelAdmin):
+@admin.register(models.InventoryBayLot)
+class InventoryBayLotAdmin(SimpleHistoryAdmin):
     list_display = (
-        'id', 'lot_number', 'location',
-        'from_location', 'quantity', 'comments',
-        'created_by', 'created_at', 'updated_by',
-        'updated_at',
+        'inventory_bay', 'product_lot', 'quantity',
     )
     list_filter = (
-        'lot_number', 'location', 'from_location',
-        'quantity', 'comments', 'created_by',
-        'created_at', 'updated_by', 'updated_at',
+        'inventory_bay', 'product_lot',
     )
     search_fields = (
-        'lot_number', 'warehouse_name', 'from_location',
-        'quantity', 'comments', 'created_by',
-        'created_at', 'updated_by', 'updated_at',
+        'inventory_bay__name', 'product_lot__lot_number',
+    )
+
+    fieldsets = (
+        (None, {
+            'fields': ('inventory_bay', 'product_lot', 'quantity',)
+        }),
+    )
+
+
+@admin.register(models.InventoryTransfer)
+class InventoryTransferAdmin(SimpleHistoryAdmin):
+    list_display = (
+        'id', 'product_lot', 'from_inventory_bay', 'to_inventory_bay',
+        'quantity', 'transfer_date',
+    )
+    list_filter = (
+        'product_lot', 'from_inventory_bay', 'to_inventory_bay',
+        'transfer_date',
+    )
+    search_fields = (
+        'product_lot__lot_number', 'from_inventory_bay__name', 'to_inventory_bay__name',
     )
 
     fieldsets = (
         (None, {
             'fields': (
-                'lot_number', 'location',
-                'from_location', 'quantity', 'comments', 'created_by',
-                'created_at', 'updated_by', 'updated_at',
+                'product_lot', 'from_inventory_bay', 'to_inventory_bay',
+                'quantity',
             )
         }),
     )

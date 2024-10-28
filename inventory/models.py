@@ -1,8 +1,5 @@
-from django.contrib.auth import get_user_model
 from django.db import models
-from django.db.models import CASCADE, RESTRICT, SET_NULL
-from django.contrib.auth.models import User
-from django.utils import timezone
+from django.db.models import CASCADE, RESTRICT
 from django.conf import settings
 from simple_history.models import HistoricalRecords
 
@@ -83,83 +80,113 @@ class InventoryBay(models.Model):
 
     history = HistoricalRecords(user_model=settings.AUTH_USER_MODEL)
 
+    def get_lot_quantity(self, product_lot):
+        """Get the current quantity of a specific ProductLot in this InventoryBay."""
+        try:
+            lot_quantity = self.lot_quantities.get(product_lot=product_lot)
+            return lot_quantity.quantity
+        except InventoryBayLot.DoesNotExist:
+            # If the lot doesn't exist in this bay, return 0 quantity
+            return 0
 
-class Inventory(models.Model):
-    id = models.AutoField(primary_key=True)
-    lot_number = models.ForeignKey(
+    def adjust_quantity(self, product_lot, quantity_change):
+        """Adjust the quantity of a specific ProductLot in this InventoryBay."""
+        # Try to get the InventoryBayLot object, or create it if it doesn't exist
+        lot_quantity, created = InventoryBayLot.objects.get_or_create(
+            inventory_bay=self,
+            product_lot=product_lot
+        )
+
+        # Update the quantity
+        lot_quantity.quantity += quantity_change
+
+        # Ensure the quantity doesn't go negative
+        if lot_quantity.quantity < 0:
+            raise ValueError(f"Quantity for {product_lot} in {
+                             self.name} cannot be negative.")
+
+        lot_quantity.save()
+
+
+class InventoryBayLot(models.Model):
+    inventory_bay = models.ForeignKey(
+        InventoryBay,
+        on_delete=models.CASCADE,
+        related_name="lot_quantities"
+    )
+    product_lot = models.ForeignKey(
         ProductLot,
-        on_delete=RESTRICT,
+        on_delete=models.CASCADE,
+        related_name="inventory_bays"
     )
-    location = models.ForeignKey(
+    quantity = models.IntegerField(default=0)
+
+    history = HistoricalRecords(user_model=settings.AUTH_USER_MODEL)
+
+    class Meta:
+        unique_together = ('inventory_bay', 'product_lot')
+
+    def __str__(self):
+        return f'{self.product_lot} in {self.inventory_bay} with quantity {self.quantity}'
+
+
+class InventoryTransfer(models.Model):
+    id = models.AutoField(primary_key=True)
+    product_lot = models.ForeignKey(
+        ProductLot,
+        on_delete=models.CASCADE,
+        related_name="transfers"
+    )
+    from_inventory_bay = models.ForeignKey(
         InventoryBay,
-        on_delete=RESTRICT,
-        related_name='current_location',
+        on_delete=models.RESTRICT,
+        related_name="outgoing_transfers",
+        null=True,
+        blank=True  # Allows for transfers into the system
     )
-    from_location = models.ForeignKey(
+    to_inventory_bay = models.ForeignKey(
         InventoryBay,
-        on_delete=RESTRICT,
-        related_name='inventory_from_location',
+        on_delete=models.RESTRICT,
+        related_name="incoming_transfers"
     )
-    quantity = models.IntegerField(default=1)
-    comments = models.CharField(
-        max_length=191,
-        unique=True,
-    )
-    created_by = models.ForeignKey(
-        User,
-        on_delete=SET_NULL,
-        related_name='created_objects',
-        null=True,
-        blank=True
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_by = models.ForeignKey(
-        User,
-        on_delete=CASCADE,
-        related_name='updated_objects',
-        null=True,
-        blank=True
-    )
-    updated_at = models.DateTimeField(auto_now=True)
+    quantity = models.PositiveIntegerField()
+    transfer_date = models.DateTimeField(auto_now_add=True)
 
     history = HistoricalRecords(user_model=settings.AUTH_USER_MODEL)
 
     def save(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
-        if not self.pk:
-            self.created_by = user
-            self.created_at = timezone.now()
-        self.updated_by = user
-        self.updated_at = timezone.now()
+        # Check for sufficient quantity in `from_inventory_bay` before transfer
+        if self.from_inventory_bay:
+            current_quantity = self.from_inventory_bay.get_lot_quantity(
+                self.product_lot)
+            if self.quantity > current_quantity:
+                raise ValueError(
+                    f"Insufficient quantity in {
+                        self.from_inventory_bay} for transfer of {self.product_lot}."
+                )
+
+        # Check if adding this lot would exceed max_unique_lots in `to_inventory_bay`
+        existing_lots_with_quantity = self.to_inventory_bay.lot_quantities.filter(
+            quantity__gt=0)
+
+        # Count unique lots in `to_inventory_bay` that currently have a quantity greater than zero
+        if existing_lots_with_quantity.count() >= self.to_inventory_bay.max_unique_lots:
+            # If the `product_lot` is not already present in the inventory bay
+            if not existing_lots_with_quantity.filter(product_lot=self.product_lot).exists():
+                raise ValueError(
+                    f"Cannot transfer {self.product_lot} to {
+                        self.to_inventory_bay}. "
+                    f"Exceeds max unique lots limit of {
+                        self.to_inventory_bay.max_unique_lots}."
+                )
+
         super().save(*args, **kwargs)
 
+        # Adjust quantities in both source and destination InventoryBays
+        if self.from_inventory_bay:
+            self.from_inventory_bay.adjust_quantity(
+                self.product_lot, -self.quantity)
+        self.to_inventory_bay.adjust_quantity(self.product_lot, self.quantity)
 
-class Log(models.Model):
-    id = models.AutoField(primary_key=True)
-    from_location = models.ForeignKey(
-        InventoryBay,
-        on_delete=CASCADE,
-        related_name='log_from_location',
-    )
-    to_location = models.ForeignKey(
-        InventoryBay,
-        on_delete=CASCADE,
-        related_name='to_location',
-    )
-    date_time = models.DateTimeField(
-        auto_now_add=True
-    )
-    user = models.ForeignKey(
-        get_user_model(),
-        on_delete=SET_NULL,
-        null=True,
-        blank=True
-    )
-    lot_number = models.ForeignKey(
-        ProductLot,
-        on_delete=CASCADE,
-    )
-    quantity_moved = models.IntegerField(default=0)
-    comments = models.CharField(
-        max_length=191
-    )
+    def __str__(self):
+        return f'Transfer of {self.quantity} from {self.from_inventory_bay} to {self.to_inventory_bay}'
