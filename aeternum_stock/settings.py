@@ -46,7 +46,7 @@ INSTALLED_APPS = [
 
     # Self
     'inventory',
-    'productlot',
+    'api',
     'accounts',
 ]
 
