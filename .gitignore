@@ -1,3 +1,4 @@
 __pycache__/
 db.backup.sqlite3
 db.sqlite3
+settings.py
