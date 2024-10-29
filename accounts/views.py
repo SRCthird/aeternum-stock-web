@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.urls import reverse_lazy
 
@@ -23,7 +23,13 @@ def login_view(request):
         else:
             messages.error(request, "Invalid username or password.")
 
-    return render(request, 'login.html')
+    return render(request, 'registration/login.html')
+
+
+def logout_view(request):
+    logout(request)
+    request.session.flush()
+    return redirect('login')
 
 
 def register_view(request):
