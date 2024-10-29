@@ -63,7 +63,7 @@ MIDDLEWARE = [
     'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
-ROOT_URLCONF = 'aeternum_stock.urls'
+ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
@@ -83,7 +83,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'aeternum_stock.wsgi.application'
+WSGI_APPLICATION = 'core.wsgi.application'
 
 
 # Database
