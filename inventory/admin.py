@@ -4,8 +4,10 @@ from . import models
 from csvexport.actions import csvexport
 import csv
 from django.http import HttpResponse
+from django.conf import settings
 
 admin.AdminSite.site_header = "Aeternum Stock - Admin Center"
+admin.site.site_url = f"../../{settings.SITE_PREFIX}"
 
 
 @admin.register(models.Product)
@@ -113,7 +115,6 @@ class InventoryBayLotAdmin(SimpleHistoryAdmin):
     )
 
     def get_queryset(self, request):
-        # Modify the default queryset to filter out records with quantity = 0
         qs = super().get_queryset(request)
         return qs.filter(quantity__gt=0)
 
@@ -124,13 +125,11 @@ def ExportInventoryTransferAdmin(modeladmin, request, queryset):
     response['Content-Disposition'] = 'attachment; filename="inventory_transfer.csv"'
 
     writer = csv.writer(response, quotechar='"', quoting=csv.QUOTE_ALL)
-    # Define CSV header
     writer.writerow([
         'ID', 'Product Lot', 'From Inventory Bay', 'To Inventory Bay',
         'Quantity', 'Transfer Date', 'Changed By'
     ])
 
-    # Write data rows
     for obj in queryset:
         latest_history = obj.history.first()
         changed_by = latest_history.history_user if latest_history and latest_history.history_user else "Unknown"
@@ -174,7 +173,6 @@ class InventoryTransferAdmin(SimpleHistoryAdmin):
     )
 
     def latest_history_user(self, obj):
-        # Get the most recent historical record
         latest_history = obj.history.first()
         return latest_history.history_user if latest_history and latest_history.history_user else "Unknown"
     latest_history_user.short_description = "Changed by"
