@@ -172,6 +172,12 @@ class InventoryTransferAdmin(SimpleHistoryAdmin):
         }),
     )
 
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
     def latest_history_user(self, obj):
         latest_history = obj.history.first()
         return latest_history.history_user if latest_history and latest_history.history_user else "Unknown"
