@@ -71,6 +71,7 @@ class ProductAdmin(SimpleHistoryAdmin):
 class ProductLotAdmin(SimpleHistoryAdmin):
     list_display = (
         'id', 'lot_number', 'internal_reference', 'product_name', 'quantity',
+        'latest_history_user'
     )
     list_filter = (
         'lot_number', 'internal_reference', 'product_name', 'quantity',
@@ -89,6 +90,11 @@ class ProductLotAdmin(SimpleHistoryAdmin):
             )
         }),
     )
+
+    def latest_history_user(self, obj):
+        latest_history = obj.history.first()
+        return latest_history.history_user if latest_history and latest_history.history_user else "Unknown"
+    latest_history_user.short_description = "Changed by"
 
 
 @admin.register(models.Warehouse)
