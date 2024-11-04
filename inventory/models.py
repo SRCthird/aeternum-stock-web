@@ -23,6 +23,14 @@ class Product(models.Model):
     def __str__(self):
         return f'{self.name}'
 
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
 
 class ProductLot(models.Model):
     id = models.AutoField(primary_key=True)
@@ -45,6 +53,14 @@ class ProductLot(models.Model):
     def __str__(self):
         return f'{self.lot_number}'
 
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
+
 
 class Warehouse(models.Model):
     id = models.AutoField(primary_key=True)
@@ -58,6 +74,14 @@ class Warehouse(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
 
 
 class InventoryBay(models.Model):
@@ -82,6 +106,14 @@ class InventoryBay(models.Model):
 
     def __str__(self):
         return f'{self.friendly_name}'
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
 
     def get_lot_quantity(self, product_lot):
         """Get the current quantity of a specific ProductLot in this InventoryBay."""
@@ -127,6 +159,14 @@ class InventoryBayLot(models.Model):
 
     def __str__(self):
         return f'{self.product_lot} in {self.inventory_bay} with quantity {self.quantity}'
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
 
 
 class InventoryTransfer(models.Model):
@@ -184,3 +224,11 @@ class InventoryTransfer(models.Model):
 
     def __str__(self):
         return f'Transfer of {self.quantity} from {self.from_inventory_bay} to {self.to_inventory_bay}'
+
+    @property
+    def _history_user(self):
+        return self.changed_by
+
+    @_history_user.setter
+    def _history_user(self, value):
+        self.changed_by = value
