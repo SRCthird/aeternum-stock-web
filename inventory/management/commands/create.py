@@ -115,24 +115,39 @@ class Command(BaseCommand):
             except Product.DoesNotExist:
                 raise CommandError(f"Product with name '{
                                    product_name}' does not exist.")
-            if ProductLot.objects.filter(lot_number=name_or_lot).exists():
-                raise CommandError(f"A lot with the number '{
-                                   name_or_lot}' already exists.")
-            if ProductLot.objects.filter(internal_reference=description_or_internal_ref).exists():
-                raise CommandError(f"A lot with the internal reference '{
-                                   description_or_internal_ref}' already exists.")
-
-            product_lot = ProductLot(
+            if ProductLot.objects.filter(
                 lot_number=name_or_lot,
-                internal_reference=description_or_internal_ref,
-                product_name=product,
-                quantity=quantity,
-            )
-            product_lot._history_user = user
-            product_lot.save()
+                internal_reference=description_or_internal_ref
+            ).exists():
+                product_lot = ProductLot.objects.get(
+                    lot_number=name_or_lot,
+                    internal_reference=description_or_internal_ref
+                )
+                product_lot.quantity += quantity
+                product_lot._history_user = user
+                product_lot.save()
 
-            self.stdout.write(self.style.SUCCESS(
-                f"ProductLot '{name_or_lot}' created successfully!"))
+                self.stdout.write(self.style.SUCCESS(
+                    f"ProductLot '{name_or_lot}' created successfully!"))
+            else:
+                if ProductLot.objects.filter(lot_number=name_or_lot).exists():
+                    raise CommandError(f"A lot with the number '{
+                                       name_or_lot}' already exists.")
+                if ProductLot.objects.filter(internal_reference=description_or_internal_ref).exists():
+                    raise CommandError(f"A lot with the internal reference '{
+                                       description_or_internal_ref}' already exists.")
+
+                product_lot = ProductLot(
+                    lot_number=name_or_lot,
+                    internal_reference=description_or_internal_ref,
+                    product_name=product,
+                    quantity=quantity,
+                )
+                product_lot._history_user = user
+                product_lot.save()
+
+                self.stdout.write(self.style.SUCCESS(
+                    f"ProductLot '{name_or_lot}' created successfully!"))
 
         elif model == 'warehouse':
             active = kwargs.get('active', True)
@@ -161,16 +176,17 @@ class Command(BaseCommand):
                 raise CommandError(f"Warehouse with name '{
                                    description_or_internal_ref}' does not exist.")
             if InventoryBay.objects.filter(name=name_or_lot).exists():
-                raise CommandError(f"An InventoryBay with the name '{
-                                   name_or_lot}' already exists.")
+                return
+                # raise CommandError(f"An InventoryBay with the name '{
+                #                    name_or_lot}' already exists.")
             if InventoryBay.objects.filter(friendly_name=description_or_internal_ref).exists():
                 raise CommandError(f"An InventoryBay with the friendly name '{
                                    description_or_internal_ref}' already exists.")
             inventory_bay = InventoryBay(
                 name=name_or_lot,
-                warehouse_name=description_or_internal_ref,
+                warehouse_name=warehouse,
                 max_unique_lots=max_unique_lots,
-                friendly_name=description_or_internal_ref,
+                friendly_name=f'x-{name_or_lot}',
                 active=active,
             )
             inventory_bay._history_user = user
@@ -193,15 +209,18 @@ class Command(BaseCommand):
                 raise CommandError(f"ProductLot with lot number '{
                                    description_or_internal_ref}' does not exist.")
             if InventoryBayLot.objects.filter(inventory_bay=inventory_bay, product_lot=product_lot).exists():
-                raise CommandError(f"An InventoryBayLot with inventory bay '{
-                                   name_or_lot}' and product lot '{description_or_internal_ref}' already exists.")
-            inventory_bay_lot = InventoryBayLot(
-                inventory_bay=inventory_bay,
-                product_lot=product_lot,
-                quantity=quantity,
-            )
-            inventory_bay_lot._history_user = user
-            inventory_bay_lot.save()
+                inventory_bay_lot = InventoryBayLot.objects.get(inventory_bay=inventory_bay, product_lot=product_lot)
+                inventory_bay_lot.quantity += quantity
+                inventory_bay_lot._history_user = user
+                inventory_bay_lot.save()
+            else:
+                inventory_bay_lot = InventoryBayLot(
+                    inventory_bay=inventory_bay,
+                    product_lot=product_lot,
+                    quantity=quantity,
+                )
+                inventory_bay_lot._history_user = user
+                inventory_bay_lot.save()
             self.stdout.write(self.style.SUCCESS(f"InventoryBayLot with '{
                               description_or_internal_ref}' in '{name_or_lot}' created successfully!"))
 
