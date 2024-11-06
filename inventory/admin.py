@@ -8,6 +8,7 @@ from django.conf import settings
 
 from simple_history.admin import SimpleHistoryAdmin
 from csvexport.actions import csvexport
+from more_admin_filters import MultiSelectDropdownFilter, BooleanAnnotationFilter
 import csv
 
 from . import models
@@ -54,7 +55,6 @@ class LogEntryAdmin(admin.ModelAdmin):
 @admin.register(models.Product)
 class ProductAdmin(SimpleHistoryAdmin):
     list_display = ('id', 'name', 'description',)
-    list_filter = ('name', 'description',)
     search_fields = ('name', 'description',)
 
     actions = [csvexport]
@@ -74,7 +74,7 @@ class ProductLotAdmin(SimpleHistoryAdmin):
         'latest_history_user'
     )
     list_filter = (
-        'lot_number', 'internal_reference', 'product_name', 'quantity',
+        ('product_name__name', MultiSelectDropdownFilter),
     )
     search_fields = (
         'lot_number', 'internal_reference', 'product_name__name',
@@ -100,7 +100,9 @@ class ProductLotAdmin(SimpleHistoryAdmin):
 @admin.register(models.Warehouse)
 class WarehouseAdmin(SimpleHistoryAdmin):
     list_display = ('id', 'name', 'active',)
-    list_filter = ('name', 'active',)
+    list_filter = (
+        'active',
+    )
     search_fields = ('name', 'active',)
 
     actions = [csvexport]
@@ -120,8 +122,9 @@ class InventoryBayAdmin(SimpleHistoryAdmin):
         'max_unique_lots', 'friendly_name', 'active',
     )
     list_filter = (
-        'name', 'warehouse_name', 'max_unique_lots',
-        'friendly_name', 'active',
+        ('warehouse_name__name', MultiSelectDropdownFilter),
+        ('max_unique_lots', MultiSelectDropdownFilter),
+        'active',
     )
     search_fields = (
         'name', 'warehouse_name__name', 'friendly_name',
@@ -146,10 +149,10 @@ class InventoryBayLotAdmin(SimpleHistoryAdmin):
         'inventory_bay', 'product_lot', 'quantity',
     )
     list_filter = (
-        'inventory_bay', 'product_lot',
+        ('inventory_bay__warehouse_name__name', MultiSelectDropdownFilter),
     )
     search_fields = (
-        'inventory_bay__name', 'product_lot__lot_number',
+        'inventory_bay__name', 'inventory_bay__friendly_name', 'product_lot__lot_number',
     )
 
     actions = [csvexport]
@@ -200,8 +203,7 @@ class InventoryTransferAdmin(SimpleHistoryAdmin):
         'quantity', 'transfer_date', 'latest_history_user',
     )
     list_filter = (
-        'product_lot', 'from_inventory_bay', 'to_inventory_bay',
-        'transfer_date',
+        ('transfer_date', admin.DateFieldListFilter),
     )
     search_fields = (
         'product_lot__lot_number', 'from_inventory_bay__name', 'to_inventory_bay__name',
