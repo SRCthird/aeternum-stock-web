@@ -83,8 +83,15 @@ def transfer(request):
 @login_required(login_url=f'/{settings.SITE_PREFIX}accounts/login')
 def find_lot(request):
     query = request.GET.get('q', '')
-    inventory_bay_lots = InventoryBayLot.objects.filter(
-        quantity__gt=0).select_related('inventory_bay__warehouse_name', 'product_lot')
+    inventory_bay_lots = InventoryBayLot.objects \
+        .filter(
+            quantity__gt=0
+        ) \
+        .select_related(
+            'inventory_bay__warehouse_name',
+            'product_lot',
+            'product_lot__product_name'
+        )
 
     if query:
         inventory_bay_lots = inventory_bay_lots.filter(

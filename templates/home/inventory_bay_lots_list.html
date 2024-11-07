@@ -18,7 +18,8 @@
         <tr>
           <th>Warehouse</th>
           <th>Inventory Bay</th>
-          <th>Product Lot</th>
+          <th>Lot Number</th>
+          <th>Catalog Number</th>
           <th>Quantity</th>
         </tr>
       </thead>
@@ -26,8 +27,9 @@
         {% for lot in inventory_bay_lots %}
         <tr onclick="redirectToTransfer('{{ lot.product_lot.id }}', '{{ lot.inventory_bay.id }}', '{{ lot.quantity }}')" style="cursor: pointer;">
           <td class="fw-semibold">{{ lot.inventory_bay.warehouse_name.name }}</td>
-          <td>{{ lot.inventory_bay.friendly_name }}</td>
-          <td>{{ lot.product_lot.lot_number }}</td>
+          <td class="text-center">{{ lot.inventory_bay.friendly_name }}</td>
+          <td class="text-center">{{ lot.product_lot.lot_number }}</td>
+          <td class="text-center">{{ lot.product_lot.product_name }}</td>
           <td class="text-center">{{ lot.quantity }}</td>
         </tr>
         {% empty %}
