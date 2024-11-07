@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-from inventory.models import InventoryBayLot, Product, InventoryBay
+from inventory.models import InventoryBayLot, Product, InventoryBay, ProductLot
 
 
 def product_search(request):
@@ -14,6 +14,16 @@ def to_inventory_bay_search(request):
     query = request.GET.get('q', '')
     bays = InventoryBay.objects.filter(friendly_name__icontains=query, active=True)[:10]
     results = [{'id': bay.id, 'name': bay.friendly_name} for bay in bays]
+    return JsonResponse(results, safe=False)
+
+
+def product_lot_search(request):
+    query = request.GET.get('q', '')
+    lots = ProductLot.objects.filter(
+        quantity__gt=0,
+        lot_number__icontains=query
+    )[:10]
+    results = [{'id': lot.id, 'name': lot.lot_number} for lot in lots]
     return JsonResponse(results, safe=False)
 
 
