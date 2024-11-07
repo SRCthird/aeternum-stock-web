@@ -143,7 +143,7 @@ class InventoryBayAdmin(SimpleHistoryAdmin):
     )
 
 
-@admin.register(models.InventoryBayLot)
+# @admin.register(models.InventoryBayLot)
 class InventoryBayLotAdmin(SimpleHistoryAdmin):
     list_display = (
         'inventory_bay', 'product_lot', 'quantity',
@@ -164,9 +164,53 @@ class InventoryBayLotAdmin(SimpleHistoryAdmin):
         }),
     )
 
+
+class InventoryLot(models.InventoryBayLot):
+    class Meta:
+        proxy = True
+
+
+@admin.register(InventoryLot)
+class ActiveLotAdmin(InventoryBayLotAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.filter(quantity__gt=0)
+        return qs.filter(
+            quantity__gt=0,
+        ).exclude(
+            inventory_bay__name="Released"
+        ).exclude(
+            inventory_bay__name="Scrapped"
+        )
+
+
+class ReleasedLot(models.InventoryBayLot):
+    class Meta:
+        proxy = True
+
+
+@admin.register(ReleasedLot)
+class ReleasedLotAdmin(InventoryBayLotAdmin):
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(
+            quantity__gt=0,
+            inventory_bay__name="Released"
+        )
+
+
+class ScrappedLot(models.InventoryBayLot):
+    class Meta:
+        proxy = True
+
+
+@admin.register(ScrappedLot)
+class ScrappedLotAdmin(InventoryBayLotAdmin):
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(
+            quantity__gt=0,
+            inventory_bay__name="Scrapped"
+        )
 
 
 @admin.action(description="Export Selected Audit to CSV")
