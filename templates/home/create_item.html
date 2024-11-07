@@ -47,12 +47,7 @@
                 <div class="text-danger mt-1">{{ form.product_name.errors|join:", " }}</div>
             {% endif %}
         </div>
-        <style>
-          /* Force black text for select2 options */
-          .select2-container--default .select2-results__option {
-            color: black !important;
-          }
-        </style>
+
         <script>
           $(document).ready(function() {
             $('.select2').select2({
@@ -121,6 +116,10 @@
 
   .select2-container--default .select2-selection--single .select2-selection__placeholder {
     color: #495057;
+  }
+
+  .select2-container--default .select2-results__option {
+    color: black !important;
   }
 
   .select2-container .select2-dropdown {
