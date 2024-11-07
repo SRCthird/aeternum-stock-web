@@ -95,7 +95,7 @@ class Command(BaseCommand):
             return
 
         if model == 'product':
-            product = Product.objects.create(
+            product = Product(
                 name=name_or_lot,
                 description=description_or_internal_ref
             )
