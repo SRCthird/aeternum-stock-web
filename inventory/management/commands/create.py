@@ -180,9 +180,9 @@ class Command(BaseCommand):
             if InventoryBay.objects.filter(name=name_or_lot).exists():
                 raise CommandError(f"An InventoryBay with the name '{
                                    name_or_lot}' already exists.")
-            if InventoryBay.objects.filter(friendly_name=description_or_internal_ref).exists():
+            if InventoryBay.objects.filter(friendly_name=friendly_name).exists():
                 raise CommandError(f"An InventoryBay with the friendly name '{
-                                   description_or_internal_ref}' already exists.")
+                                   friendly_name}' already exists.")
             inventory_bay = InventoryBay(
                 name=name_or_lot,
                 warehouse_name=warehouse,
