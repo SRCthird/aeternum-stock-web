@@ -11,7 +11,7 @@ class ProductLotForm(forms.ModelForm):
             'lot_number': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter lot number'}),
             'internal_reference': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter internal reference'}),
             'product_name': forms.Select(attrs={'class': 'form-control'}),
-            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
+            'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
         }
 
 
