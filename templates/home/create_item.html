@@ -26,7 +26,7 @@
 
         <!-- Internal Reference Field -->
         <div class="mb-4">
-            <label for="{{ form.internal_reference.id_for_label }}" class="form-label fw-bold d-block">Internal Reference</label>
+            <label for="{{ form.internal_reference.id_for_label }}" class="form-label fw-bold d-block">Workorder Number</label>
             {{ form.internal_reference|add_class:"form-control" }}
             {% if form.internal_reference.help_text %}
                 <small class="form-text text-muted">{{ form.internal_reference.help_text }}</small>
