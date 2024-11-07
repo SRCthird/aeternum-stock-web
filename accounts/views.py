@@ -26,12 +26,6 @@ def login_view(request):
     return render(request, 'registration/login.html')
 
 
-def logout_view(request):
-    logout(request)
-    request.session.flush()
-    return redirect('login')
-
-
 def register_view(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
