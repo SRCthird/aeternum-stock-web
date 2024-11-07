@@ -74,6 +74,7 @@ class Command(BaseCommand):
         parser.add_argument('--quantity', type=int, default=0)
         parser.add_argument('--active', type=bool, default=True)
         parser.add_argument('--warehouse_name', type=str)
+        parser.add_argument('--friendly_name', type=str)
         parser.add_argument('--max_unique_lots', type=int, default=1)
         parser.add_argument('--inventory_bay_name', type=str)
         parser.add_argument('--product_lot_number', type=str)
@@ -163,6 +164,7 @@ class Command(BaseCommand):
                 f"Warehouse '{name_or_lot}' created successfully!"))
 
         elif model == 'bay':
+            friendly_name = kwargs.get('friendly_name', f'x-{name_or_lot}')
             max_unique_lots = kwargs.get('max_unique_lots', 1)
             active = kwargs.get('active', True)
 
@@ -176,9 +178,8 @@ class Command(BaseCommand):
                 raise CommandError(f"Warehouse with name '{
                                    description_or_internal_ref}' does not exist.")
             if InventoryBay.objects.filter(name=name_or_lot).exists():
-                return
-                # raise CommandError(f"An InventoryBay with the name '{
-                #                    name_or_lot}' already exists.")
+                raise CommandError(f"An InventoryBay with the name '{
+                                   name_or_lot}' already exists.")
             if InventoryBay.objects.filter(friendly_name=description_or_internal_ref).exists():
                 raise CommandError(f"An InventoryBay with the friendly name '{
                                    description_or_internal_ref}' already exists.")
@@ -186,7 +187,7 @@ class Command(BaseCommand):
                 name=name_or_lot,
                 warehouse_name=warehouse,
                 max_unique_lots=max_unique_lots,
-                friendly_name=f'x-{name_or_lot}',
+                friendly_name=friendly_name,
                 active=active,
             )
             inventory_bay._history_user = user
