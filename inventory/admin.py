@@ -199,13 +199,6 @@ class InventoryBayLotAdmin(SimpleHistoryAdmin):
         qs = super().get_queryset(request)
         return qs.filter(quantity__gt=0)
 
-    def changelist_view(self, request, extra_context=None):
-        # Set default filter to 'Active' if no filter is applied
-        if 'inventory_status' not in request.GET:
-            request.GET = request.GET.copy()
-            request.GET['inventory_status'] = 'Active'
-        return super().changelist_view(request, extra_context=extra_context)
-
 
 @admin.action(description="Export Selected Audit to CSV")
 def ExportInventoryTransferAdmin(modeladmin, request, queryset):
