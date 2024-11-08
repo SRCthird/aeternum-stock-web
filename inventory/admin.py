@@ -6,7 +6,9 @@ from django.utils.safestring import mark_safe
 from django.http import HttpResponse
 from django.conf import settings
 
-from simple_history.admin import SimpleHistoryAdmin
+from simple_history.admin import SimpleHistoryAdmin, render
+from simple_history.models import HistoricalRecords
+from simple_history.utils import get_history_manager_for_model
 from csvexport.actions import csvexport
 from more_admin_filters import MultiSelectDropdownFilter, BooleanAnnotationFilter
 import csv
@@ -172,6 +174,7 @@ class InventoryLot(models.InventoryBayLot):
 
 @admin.register(InventoryLot)
 class ActiveLotAdmin(InventoryBayLotAdmin):
+
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.filter(

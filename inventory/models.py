@@ -152,7 +152,10 @@ class InventoryBayLot(models.Model):
     )
     quantity = models.IntegerField(default=0)
 
-    history = HistoricalRecords(user_model=settings.AUTH_USER_MODEL)
+    history = HistoricalRecords(
+        inherit=True,
+        user_model=settings.AUTH_USER_MODEL
+    )
 
     class Meta:
         unique_together = ('inventory_bay', 'product_lot')
