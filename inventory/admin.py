@@ -145,7 +145,7 @@ class InventoryBayAdmin(SimpleHistoryAdmin):
     )
 
 
-# @admin.register(models.InventoryBayLot)
+@admin.register(models.InventoryBayLot)
 class InventoryBayLotAdmin(SimpleHistoryAdmin):
     list_display = (
         'inventory_bay', 'product_lot', 'quantity',
@@ -167,12 +167,7 @@ class InventoryBayLotAdmin(SimpleHistoryAdmin):
     )
 
 
-class InventoryLot(models.InventoryBayLot):
-    class Meta:
-        proxy = True
-
-
-@admin.register(InventoryLot)
+@admin.register(models.InventoryLot)
 class ActiveLotAdmin(InventoryBayLotAdmin):
 
     def get_queryset(self, request):
@@ -186,12 +181,7 @@ class ActiveLotAdmin(InventoryBayLotAdmin):
         )
 
 
-class ReleasedLot(models.InventoryBayLot):
-    class Meta:
-        proxy = True
-
-
-@admin.register(ReleasedLot)
+@admin.register(models.ReleasedLot)
 class ReleasedLotAdmin(InventoryBayLotAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)
@@ -201,12 +191,7 @@ class ReleasedLotAdmin(InventoryBayLotAdmin):
         )
 
 
-class ScrappedLot(models.InventoryBayLot):
-    class Meta:
-        proxy = True
-
-
-@admin.register(ScrappedLot)
+@admin.register(models.ScrappedLot)
 class ScrappedLotAdmin(InventoryBayLotAdmin):
     def get_queryset(self, request):
         qs = super().get_queryset(request)

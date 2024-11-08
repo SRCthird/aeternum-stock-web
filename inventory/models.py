@@ -172,6 +172,36 @@ class InventoryBayLot(models.Model):
         self.changed_by = value
 
 
+class InventoryLot(InventoryBayLot):
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        self.__class__ = InventoryBayLot
+        super(InventoryBayLot, self).save(*args, **kwargs)
+        self.__class__ = InventoryLot
+
+
+class ReleasedLot(InventoryBayLot):
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        self.__class__ = InventoryBayLot
+        super(InventoryBayLot, self).save(*args, **kwargs)
+        self.__class__ = ReleasedLot
+
+
+class ScrappedLot(InventoryBayLot):
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        self.__class__ = InventoryBayLot
+        super(InventoryBayLot, self).save(*args, **kwargs)
+        self.__class__ = ScrappedLot
+
+
 class InventoryTransfer(models.Model):
     id = models.AutoField(primary_key=True)
     product_lot = models.ForeignKey(
