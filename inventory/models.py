@@ -23,6 +23,10 @@ class Product(models.Model):
     def __str__(self):
         return f'{self.name}'
 
+    class Meta:
+        verbose_name = "Product"
+        verbose_name_plural = "Products"
+
     @property
     def _history_user(self):
         return self.changed_by
@@ -53,6 +57,10 @@ class ProductLot(models.Model):
     def __str__(self):
         return f'{self.lot_number}'
 
+    class Meta:
+        verbose_name = "Product Lot"
+        verbose_name_plural = "Product Lots"
+
     @property
     def _history_user(self):
         return self.changed_by
@@ -74,6 +82,10 @@ class Warehouse(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+
+    class Meta:
+        verbose_name = "Warehouse"
+        verbose_name_plural = "Warehouses"
 
     @property
     def _history_user(self):
@@ -106,6 +118,10 @@ class InventoryBay(models.Model):
 
     def __str__(self):
         return f'{self.friendly_name}'
+
+    class Meta:
+        verbose_name = "Inventory Bay"
+        verbose_name_plural = "Inventory Bays"
 
     @property
     def _history_user(self):
@@ -159,6 +175,8 @@ class InventoryBayLot(models.Model):
 
     class Meta:
         unique_together = ('inventory_bay', 'product_lot')
+        verbose_name = "Inventory Lot"
+        verbose_name_plural = "Inventory Lots"
 
     def __str__(self):
         return f'{self.product_lot} in {self.inventory_bay} with quantity {self.quantity}'
@@ -195,6 +213,10 @@ class InventoryTransfer(models.Model):
     transfer_date = models.DateTimeField(auto_now_add=True)
 
     history = HistoricalRecords(user_model=settings.AUTH_USER_MODEL)
+
+    class Meta:
+        verbose_name = "Inventory Transfer"
+        verbose_name_plural = "Inventory Transfers"
 
     def save(self, *args, **kwargs):
         if self.from_inventory_bay:
