@@ -6,11 +6,9 @@ from django.utils.safestring import mark_safe
 from django.http import HttpResponse
 from django.conf import settings
 
-from simple_history.admin import SimpleHistoryAdmin, render
-from simple_history.models import HistoricalRecords
-from simple_history.utils import get_history_manager_for_model
+from simple_history.admin import SimpleHistoryAdmin
 from csvexport.actions import csvexport
-from more_admin_filters import MultiSelectDropdownFilter, BooleanAnnotationFilter
+from more_admin_filters import MultiSelectDropdownFilter
 import csv
 
 from . import models
@@ -145,12 +143,43 @@ class InventoryBayAdmin(SimpleHistoryAdmin):
     )
 
 
+class InventoryLotFilter(admin.SimpleListFilter):
+    title = 'Inventory Selection'
+    parameter_name = 'inventory_status'
+
+    def lookups(self, request, model_admin):
+        return [
+            ('Active', 'Active'),
+            ('Released', 'Released'),
+            ('Scrapped', 'Scrapped'),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == 'Active':
+            return queryset.filter(
+                quantity__gt=0
+            ).exclude(
+                inventory_bay__name__in=["Released", "Scrapped"]
+            )
+        elif self.value() == 'Released':
+            return queryset.filter(
+                quantity__gt=0,
+                inventory_bay__name="Released"
+            )
+        elif self.value() == 'Scrapped':
+            return queryset.filter(
+                quantity__gt=0,
+                inventory_bay__name="Scrapped"
+            )
+
+
 @admin.register(models.InventoryBayLot)
 class InventoryBayLotAdmin(SimpleHistoryAdmin):
     list_display = (
         'inventory_bay', 'product_lot', 'quantity',
     )
     list_filter = (
+        InventoryLotFilter,
         ('inventory_bay__warehouse_name__name', MultiSelectDropdownFilter),
     )
     search_fields = (
@@ -166,39 +195,16 @@ class InventoryBayLotAdmin(SimpleHistoryAdmin):
         }),
     )
 
-
-@admin.register(models.InventoryLot)
-class ActiveLotAdmin(InventoryBayLotAdmin):
-
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.filter(
-            quantity__gt=0,
-        ).exclude(
-            inventory_bay__name="Released"
-        ).exclude(
-            inventory_bay__name="Scrapped"
-        )
+        return qs.filter(quantity__gt=0)
 
-
-@admin.register(models.ReleasedLot)
-class ReleasedLotAdmin(InventoryBayLotAdmin):
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.filter(
-            quantity__gt=0,
-            inventory_bay__name="Released"
-        )
-
-
-@admin.register(models.ScrappedLot)
-class ScrappedLotAdmin(InventoryBayLotAdmin):
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.filter(
-            quantity__gt=0,
-            inventory_bay__name="Scrapped"
-        )
+    def changelist_view(self, request, extra_context=None):
+        # Set default filter to 'Active' if no filter is applied
+        if 'inventory_status' not in request.GET:
+            request.GET = request.GET.copy()
+            request.GET['inventory_status'] = 'Active'
+        return super().changelist_view(request, extra_context=extra_context)
 
 
 @admin.action(description="Export Selected Audit to CSV")
