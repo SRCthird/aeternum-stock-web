@@ -93,9 +93,23 @@
         </div>
 
         <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary w-100 py-2 mt-4">
+        <button type="submit"  id="submit-btn" class="btn btn-primary w-100 py-2 mt-4">
           Submit Transfer
         </button>
+        {% if request.session.print_prompt %}
+          <script type="text/javascript">
+            window.onload = function() {
+              if (confirm("Would you like to print the transaction?")) {
+                window.print();
+                window.onafterprint = function() {
+                  window.location.href = "{% url 'index' %}";
+                };
+              } else {
+                window.location.href = "{% url 'index' %}";
+              }
+            };
+          </script>
+        {% endif %}
     </form>
 
     <div class="text-center mt-3">

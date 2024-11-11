@@ -68,10 +68,12 @@ def transfer(request):
         if form.is_valid():
             try:
                 form.save()
-                return redirect('index')
+                request.session['print_prompt'] = True
+                # return redirect('index')
             except ValueError as e:
                 form.add_error(None, str(e))
     else:
+        request.session['print_prompt'] = False
         form = InventoryTransferForm(initial=initial_data)
 
     return render(request, 'home/transfer.html', {
