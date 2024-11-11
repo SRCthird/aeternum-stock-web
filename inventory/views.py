@@ -34,15 +34,24 @@ def create_item(request):
     if request.method == "POST":
         form = ProductLotForm(request.POST)
         if form.is_valid():
-            new_product_lot = form.save()
+            # Retrieve the comment from the form data
+            comment = form.cleaned_data.get('comment')
+
+            # Set the history change reason for ProductLot
+            new_product_lot = form.save(commit=False)
+            new_product_lot._change_reason = comment
+            new_product_lot.save()
 
             starting_bay = get_object_or_404(InventoryBay, name="Production")
 
-            InventoryBayLot.objects.create(
+            # Set the history change reason for InventoryBayLot
+            inventory_bay_lot = InventoryBayLot(
                 inventory_bay=starting_bay,
                 product_lot=new_product_lot,
                 quantity=new_product_lot.quantity
             )
+            inventory_bay_lot._change_reason = comment
+            inventory_bay_lot.save()
 
             return redirect(reverse('index'))
     else:
@@ -83,7 +92,9 @@ def transfer(request):
         form = InventoryTransferForm(request.POST, initial=initial_data)
         if form.is_valid():
             try:
-                transaction = form.save()
+                transaction = form.save(commit=False)
+                transaction._change_reason = transaction.comments
+                transaction.save()
                 request.session['print_prompt'] = True
                 return redirect('index', transaction_id=transaction.id)
             except ValueError as e:

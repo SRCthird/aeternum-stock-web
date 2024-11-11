@@ -231,7 +231,7 @@ def ExportInventoryTransferAdmin(modeladmin, request, queryset):
 class InventoryTransferAdmin(SimpleHistoryAdmin):
     list_display = (
         'id', 'product_lot', 'from_inventory_bay', 'to_inventory_bay',
-        'quantity', 'transfer_date', 'latest_history_user',
+        'quantity', 'transfer_date', 'latest_history_user'
     )
     list_filter = (
         ('transfer_date', admin.DateFieldListFilter),
@@ -247,7 +247,7 @@ class InventoryTransferAdmin(SimpleHistoryAdmin):
         (None, {
             'fields': (
                 'product_lot', 'from_inventory_bay', 'to_inventory_bay',
-                'quantity',
+                'quantity', 'comments'
             )
         }),
     )

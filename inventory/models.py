@@ -211,6 +211,10 @@ class InventoryTransfer(models.Model):
     )
     quantity = models.PositiveIntegerField()
     transfer_date = models.DateTimeField(auto_now_add=True)
+    comments = models.TextField(
+        blank=True,
+        null=True
+    )
 
     history = HistoricalRecords(user_model=settings.AUTH_USER_MODEL)
 

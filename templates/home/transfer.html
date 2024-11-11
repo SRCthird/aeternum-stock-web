@@ -92,6 +92,18 @@
             {% endif %}
         </div>
 
+        <!-- Comment Field -->
+        <div class="mb-4">
+            <label for="{{ form.comments.id_for_label }}" class="form-label fw-bold d-block">Comments</label>
+            {{ form.comments|add_class:"form-control" }}
+            {% if form.comments.help_text %}
+                <small class="form-text text-muted">{{ form.comments.help_text }}</small>
+            {% endif %}
+            {% if form.comments.errors %}
+                <div class="text-danger mt-1">{{ form.comments.errors|join:", " }}</div>
+            {% endif %}
+        </div>
+
         <!-- Submit Button -->
         <button type="submit"  id="submit-btn" class="btn btn-primary w-100 py-2 mt-4">
           Submit Transfer

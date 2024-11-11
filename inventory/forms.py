@@ -3,6 +3,15 @@ from .models import InventoryTransfer, InventoryBay, ProductLot
 
 
 class ProductLotForm(forms.ModelForm):
+    comment = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'placeholder': 'Add a comment for history'
+        }),
+        label="History Comment"
+    )
+
     class Meta:
         model = ProductLot
         fields = ['lot_number', 'internal_reference',
@@ -14,12 +23,21 @@ class ProductLotForm(forms.ModelForm):
             'quantity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
         }
 
+    def save(self, commit=True):
+        instance = super().save(commit=False)
+        comment = self.cleaned_data.get("comment")
+        if comment:
+            pass
+        if commit:
+            instance.save()
+        return instance
+
 
 class InventoryTransferForm(forms.ModelForm):
     class Meta:
         model = InventoryTransfer
         fields = ['product_lot', 'from_inventory_bay',
-                  'to_inventory_bay', 'quantity']
+                  'to_inventory_bay', 'quantity', 'comments']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
