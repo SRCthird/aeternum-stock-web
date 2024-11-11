@@ -3,14 +3,30 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, redirect, render
 from django.db.models import Q
 from django.urls import reverse
+from django.template.response import TemplateResponse
+import datetime
+import pytz
 
-from .models import InventoryBay, InventoryBayLot, ProductLot
+from .models import InventoryBay, InventoryBayLot, InventoryTransfer, Product, ProductLot
 from .forms import ProductLotForm, InventoryTransferForm
 
 
 @login_required(login_url=f'/{settings.SITE_PREFIX}accounts/login')
-def index(request):
-    return render(request, 'home/base.html', {'title': 'Actions'})
+def index(request, transaction_id=0):
+    response = TemplateResponse(
+        request,
+        'home/base.html',
+        {
+            'title': 'Actions',
+            'transaction_id': transaction_id
+        }
+    )
+
+    def callback(response):
+        request.session['print_prompt'] = False
+
+    response.add_post_render_callback(callback)
+    return response
 
 
 @login_required(login_url=f'/{settings.SITE_PREFIX}accounts/login')
@@ -67,13 +83,13 @@ def transfer(request):
         form = InventoryTransferForm(request.POST, initial=initial_data)
         if form.is_valid():
             try:
-                form.save()
+                transaction = form.save()
                 request.session['print_prompt'] = True
-                # return redirect('index')
+                return redirect('index', transaction_id=transaction.id)
             except ValueError as e:
                 form.add_error(None, str(e))
     else:
-        request.session['print_prompt'] = False
+
         form = InventoryTransferForm(initial=initial_data)
 
     return render(request, 'home/transfer.html', {
@@ -106,4 +122,23 @@ def find_lot(request):
         'title': 'Inventory Bay Lots',
         'inventory_bay_lots': inventory_bay_lots,
         'search_query': query
+    })
+
+
+@login_required(login_url=f'/{settings.SITE_PREFIX}accounts/login')
+def print_transaction(request, transaction_id):
+    transaction = get_object_or_404(InventoryTransfer, id=transaction_id)
+    product = get_object_or_404(
+        Product, id=transaction.product_lot.product_name_id)
+
+    def get_est_datetime_now():
+        """Gets the current datetime in EST and formats it as 'dd-mmm-yy hh:mm'."""
+        est_timezone = pytz.timezone('US/Eastern')
+        now = datetime.datetime.now(est_timezone)
+        return now.strftime('%d-%b-%y %H:%M')
+
+    return render(request, 'home/print_transaction.html', {
+        'transaction': transaction,
+        'product': product,
+        'datetime': get_est_datetime_now()
     })

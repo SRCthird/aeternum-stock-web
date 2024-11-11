@@ -19,5 +19,17 @@
     </div>
   </div>
 </body>
+
+{% if request.session.print_prompt %}
+  <script type="text/javascript">
+    window.onload = function() {
+      if (confirm("Would you like to print the transaction?")) {
+        const printWindow = window.open("{% url 'print_transaction' transaction_id=transaction_id %}", "_blank");
+        printWindow.focus();
+      }
+    };
+  </script>
+{% endif %}
+
 {% endblock %}
 

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Print Transaction</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      color: #333;
+    }
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: 0;
+      padding: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      border-bottom: 1px solid #ddd;
+      background-color: #f4f4f4;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body onload="window.print(); window.onafterprint = window.close;">
+  <div class="container">
+    <h1>Inventory Transaction Receipt</h1>
+    <table>
+      <tr>
+        <td><strong>User Name</strong></td>
+        <td>{{ request.user.first_name }} {{ request.user.last_name }} ({{ request.user.username }})</td>
+      </tr>
+      <tr>
+        <td><strong>Transaction Date</strong></td>
+        <td>{{ datetime }}</td>
+      </tr>
+    </table>
+    <table>
+      <tr>
+        <th>Lot Number</th>
+        <th>Catalog Number</th>
+        <th>From Inventory Bay</th>
+        <th>To Inventory Bay</th>
+        <th>Quantity</th>
+      </tr>
+      <tr>
+        <td>{{ transaction.product_lot }}</td>
+        <td>{{ product }}</td>
+        <td>{{ transaction.from_inventory_bay }}</td>
+        <td>{{ transaction.to_inventory_bay }}</td>
+        <td>{{ transaction.quantity }}</td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>
+
