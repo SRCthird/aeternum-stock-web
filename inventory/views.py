@@ -71,7 +71,7 @@ def transfer(request):
     to_inventory_bay_name = None
     if action == 'release':
         to_inventory_bay_name = 'Released'
-    elif action == 'scrapped':
+    elif action == 'scrap':
         to_inventory_bay_name = 'Scrapped'
     quantity = request.GET.get('quantity')
 
