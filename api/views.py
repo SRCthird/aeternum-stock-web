@@ -12,8 +12,12 @@ def product_search(request):
 
 def to_inventory_bay_search(request):
     query = request.GET.get('q', '')
-    bays = InventoryBay.objects.filter(friendly_name__icontains=query, active=True)[:10]
-    results = [{'id': bay.id, 'name': bay.friendly_name} for bay in bays]
+    bays = InventoryBay.objects.filter(
+        friendly_name__icontains=query, active=True)[:10]
+    results = [{
+        'id': bay.id,
+        'name': bay.friendly_name
+    } for bay in bays]
     return JsonResponse(results, safe=False)
 
 
@@ -39,7 +43,8 @@ def get_inventory_bays_for_lot(request, product_lot_id):
     for lot in bays_with_lot:
         inventory_data.append({
             'id': lot.inventory_bay.id,
-            'name': lot.inventory_bay.friendly_name,
+            'name': f"{lot.inventory_bay.friendly_name} ({lot.quantity})",
         })
 
     return JsonResponse({'bays': inventory_data})
+
