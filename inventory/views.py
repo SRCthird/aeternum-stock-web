@@ -95,12 +95,17 @@ def transfer(request):
                 transaction = form.save(commit=False)
                 transaction._change_reason = transaction.comments
                 transaction.save()
-                request.session['print_prompt'] = True
-                return redirect('index', transaction_id=transaction.id)
+                # request.session['print_prompt'] = True
+                if request.session.get('print_list'):
+                    request.session['print_list'] = f'{
+                        request.session.get("print_list")},{transaction.id}'
+                    print(request.session.get('print_list'))
+                else:
+                    request.session['print_list'] = transaction.id
+                return redirect(reverse('index'))
             except ValueError as e:
                 form.add_error(None, str(e))
     else:
-
         form = InventoryTransferForm(initial=initial_data)
 
     return render(request, 'home/transfer.html', {
@@ -137,19 +142,48 @@ def find_lot(request):
 
 
 @login_required(login_url=f'/{settings.SITE_PREFIX}accounts/login')
-def print_transaction(request, transaction_id):
-    transaction = get_object_or_404(InventoryTransfer, id=transaction_id)
-    product = get_object_or_404(
-        Product, id=transaction.product_lot.product_name_id)
-
+def print_transaction(request):
     def get_est_datetime_now():
         """Gets the current datetime in EST and formats it as 'dd-mmm-yy hh:mm'."""
         est_timezone = pytz.timezone('US/Eastern')
         now = datetime.datetime.now(est_timezone)
         return now.strftime('%d-%b-%y %H:%M')
 
-    return render(request, 'home/print_transaction.html', {
-        'transaction': transaction,
-        'product': product,
-        'datetime': get_est_datetime_now()
-    })
+    action = request.GET.get('action', None)
+    transaction_ids: str = f'{request.session.get("print_list")}'
+    transactions = []
+
+    if transaction_ids is not None:
+        if "," in transaction_ids:
+            ids = transaction_ids.split(',')
+        else:
+            ids = [transaction_ids]
+        for id in ids:
+            transaction = get_object_or_404(InventoryTransfer, id=id)
+            transactions.append({
+                'transaction': transaction,
+                'product': get_object_or_404(
+                    Product, id=transaction.product_lot.product_name_id)
+            })
+
+    response = TemplateResponse(
+        request,
+        'home/print_transaction.html',
+        {
+            'transactions': transactions,
+            'datetime': get_est_datetime_now()
+        }
+    )
+
+    def callback(response):
+        if action is None:
+            request.session.pop('print_list', None)
+
+    response.add_post_render_callback(callback)
+    return response
+
+
+@login_required(login_url=f'/{settings.SITE_PREFIX}accounts/login')
+def empty_print(request):
+    request.session.pop('print_list', None)
+    return redirect(reverse('index'))

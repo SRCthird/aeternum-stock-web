@@ -48,17 +48,21 @@
       <tr>
         <th>Lot Number</th>
         <th>Catalog Number</th>
+        <th>Transaction Time</th>
         <th>From Inventory Bay</th>
         <th>To Inventory Bay</th>
         <th>Quantity</th>
       </tr>
+      {% for t in transactions %}
       <tr>
-        <td>{{ transaction.product_lot }}</td>
-        <td>{{ product }}</td>
-        <td>{{ transaction.from_inventory_bay }}</td>
-        <td>{{ transaction.to_inventory_bay }}</td>
-        <td>{{ transaction.quantity }}</td>
+          <td>{{ t.transaction.product_lot }}</td>
+          <td>{{ t.product.name }}</td>
+          <td>{{ t.transaction.transfer_date }}</td>
+          <td>{{ t.transaction.from_inventory_bay }}</td>
+          <td>{{ t.transaction.to_inventory_bay }}</td>
+          <td>{{ t.transaction.quantity }}</td>
       </tr>
+      {% endfor %}
     </table>
   </div>
 </body>

@@ -11,25 +11,16 @@
 <body class="light-theme" style="margin:0;">
   <div class="d-flex flex-column min-vh-100 px-0">
     {% include 'components/nav.html' %}
-
-    <div class="container-fluid d-flex flex-column flex-grow-1 px-0">
-      {% block content %}
+    {% block content %}
+      {% if request.session.print_list %}
+        {% include 'components/print_request.html' %}
+      {% endif %}
+      <div class="container-fluid d-flex flex-column flex-grow-1 px-0">
         {% include 'home/actions.html' %}
-      {% endblock %}
-    </div>
+      </div>
+    {% endblock %}
   </div>
 </body>
-
-{% if request.session.print_prompt %}
-  <script type="text/javascript">
-    window.onload = function() {
-      if (confirm("Would you like to print the transaction?")) {
-        const printWindow = window.open("{% url 'print_transaction' transaction_id=transaction_id %}", "_blank");
-        printWindow.focus();
-      }
-    };
-  </script>
-{% endif %}
 
 {% endblock %}
 

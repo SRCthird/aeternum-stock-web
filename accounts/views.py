@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.urls import reverse_lazy
+from django.urls import reverse
 
 from .forms import CustomUserCreationForm
 
@@ -18,12 +19,19 @@ def login_view(request):
         )
 
         if user is not None:
+            request.session.pop('print_list', None)
             login(request, user)
             return redirect(reverse_lazy('index'))
         else:
             messages.error(request, "Invalid username or password.")
 
     return render(request, 'registration/login.html')
+
+
+def logout_view(request):
+    request.session.pop('print_list', None)
+    logout(request)
+    return redirect(reverse('index'))
 
 
 def register_view(request):
