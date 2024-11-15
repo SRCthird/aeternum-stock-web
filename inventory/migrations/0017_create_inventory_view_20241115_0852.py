@@ -40,6 +40,10 @@ class Migration(migrations.Migration):
                     ]
                 )
             ],
-            where=['inventory_inventorybaylot.quantity <> 0']
+            where=[
+                'inventory_inventorybaylot.quantity <> 0',
+                "inventory_inventorybay.name <> 'Released'",
+                "inventory_inventorybay.name <> 'Scrapped'"
+            ]
         )
     ]
