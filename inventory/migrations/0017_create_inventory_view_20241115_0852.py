@@ -44,6 +44,9 @@ class Migration(migrations.Migration):
                 'inventory_inventorybaylot.quantity <> 0',
                 "inventory_inventorybay.name <> 'Released'",
                 "inventory_inventorybay.name <> 'Scrapped'"
+            ],
+            order_by=[
+                'Location ASC'
             ]
         )
     ]
