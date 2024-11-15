@@ -22,6 +22,7 @@ class CreateView(Operation):
         from_table: str,
         join: Optional[List[Join]] = None,
         where: Optional[List[str]] = None,
+        order_by: Optional[List[str]] = None,
     ):
         """
         Initialize the CreateView operation.
@@ -38,6 +39,7 @@ class CreateView(Operation):
         self.from_table = from_table
         self.join = "\n".join(map(str, join)) if join else ""
         self.where = f'WHERE {" AND ".join(where)}' if where else ""
+        self.order_by = f'ORDER BY {", ".join(order_by)}' if order_by else ""
 
     def state_forwards(self, app_label, state):
         # This operation doesn't affect Django's model state.
@@ -55,6 +57,7 @@ class CreateView(Operation):
             FROM {self.from_table}
             {self.join}
             {self.where}
+            {self.order_by}
         """
         schema_editor.execute(query)
 
