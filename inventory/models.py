@@ -190,6 +190,29 @@ class InventoryBayLot(models.Model):
         self.changed_by = value
 
 
+class InventoryLotView(models.Model):
+    quantity = models.CharField(
+        max_length=191,
+        db_column='Quantity'
+    )
+    location = models.CharField(
+        max_length=191,
+        db_column='Location'
+    )
+    lot_number = models.CharField(
+        max_length=191,
+        db_column='Lot Nummer'
+    )
+    catalog_number = models.CharField(
+        max_length=191,
+        db_column='Catalog Number'
+    )
+
+    class Meta:
+        managed = False
+        db_table = "inventory_inventorylotview"
+
+
 class InventoryTransfer(models.Model):
     id = models.AutoField(primary_key=True)
     product_lot = models.ForeignKey(
