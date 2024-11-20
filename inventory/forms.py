@@ -41,8 +41,11 @@ class InventoryTransferForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields['from_inventory_bay'].required = True
         self.fields['from_inventory_bay'].queryset = InventoryBay.objects.filter(
             active=True)
+        self.fields['to_inventory_bay'].required = True
         self.fields['to_inventory_bay'].queryset = InventoryBay.objects.filter(
             active=True)
+        self.fields['product_lot'].required = True
         self.fields['product_lot'].queryset = ProductLot.objects.all()
