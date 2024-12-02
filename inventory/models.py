@@ -189,6 +189,15 @@ class InventoryBayLot(models.Model):
     def _history_user(self, value):
         self.changed_by = value
 
+    @property
+    def change_reason(self):
+        return getattr(self, '_change_reason', None)
+
+    @change_reason.setter
+    def change_reason(self, value):
+        self._change_reason = value
+        self.history_change_reason = value
+
 
 class InventoryLotView(models.Model):
     quantity = models.CharField(

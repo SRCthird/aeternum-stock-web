@@ -1,5 +1,5 @@
 from django import forms
-from .models import InventoryTransfer, InventoryBay, ProductLot
+from .models import InventoryTransfer, InventoryBay, ProductLot, InventoryBayLot
 
 
 class ProductLotForm(forms.ModelForm):
@@ -49,3 +49,16 @@ class InventoryTransferForm(forms.ModelForm):
             active=True)
         self.fields['product_lot'].required = True
         self.fields['product_lot'].queryset = ProductLot.objects.all()
+
+
+class InventoryBayLotForm(forms.ModelForm):
+    change_reason = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={'rows': 3}),
+        label="Change Reason",
+        help_text="Provide a reason for this change (optional)."
+    )
+
+    class Meta:
+        model = InventoryBayLot
+        fields = '__all__'

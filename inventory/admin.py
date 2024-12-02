@@ -11,6 +11,7 @@ from csvexport.actions import csvexport
 from more_admin_filters import MultiSelectDropdownFilter
 import csv
 
+from inventory.forms import InventoryBayLotForm
 from . import models
 
 admin.AdminSite.site_header = "Aeternum Stock - Admin Center"
@@ -175,6 +176,7 @@ class InventoryLotFilter(admin.SimpleListFilter):
 
 @admin.register(models.InventoryBayLot)
 class InventoryBayLotAdmin(SimpleHistoryAdmin):
+    form = InventoryBayLotForm
     list_display = (
         'inventory_bay', 'product_lot', 'quantity',
     )
@@ -191,9 +193,15 @@ class InventoryBayLotAdmin(SimpleHistoryAdmin):
 
     fieldsets = (
         (None, {
-            'fields': ('inventory_bay', 'product_lot', 'quantity',)
+            'fields': ('inventory_bay', 'product_lot', 'quantity', 'change_reason', ),
         }),
     )
+
+    def save_model(self, request, obj, form, change):
+        change_reason = form.cleaned_data.get('change_reason', None)
+        if change_reason:
+            obj.change_reason = change_reason
+        super().save_model(request, obj, form, change)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
