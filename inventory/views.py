@@ -42,7 +42,7 @@ def create_item(request):
             new_product_lot._change_reason = comment
             new_product_lot.save()
 
-            starting_bay = get_object_or_404(InventoryBay, name="Production")
+            starting_bay = get_object_or_404(InventoryBay, name="TOTING")
 
             # Set the history change reason for InventoryBayLot
             inventory_bay_lot = InventoryBayLot(
